@@ -1,5 +1,7 @@
 package xyz.hanks.library;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -17,6 +19,7 @@ import android.view.Window;
 import android.view.animation.OvershootInterpolator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -41,6 +44,7 @@ public class SmallBang extends View {
     private float DOT_BIG_RADIUS = 8;
     private float DOT_SMALL_RADIUS = 5;
     private int[] mExpandInset = new int[2];
+    private SmallBangListener listener;
     // 将下面的view变小
     // 画圆半径从小到大,同时颜色渐变 (P1)
     // 当半径到达 MAX_RADIUS, 开始画空心圆,空闲圆半径变大,画笔宽度从MAX_RADIUS变小
@@ -68,33 +72,40 @@ public class SmallBang extends View {
     }
 
     private void init(AttributeSet attrs, int defStyleAttr) {
-        //
-
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setStyle(Paint.Style.FILL);
         circlePaint.setColor(Color.BLACK);
+    }
 
+    /**
+     * listener for animation change time
+     * @param listener
+     */
+    public void setListener(SmallBangListener listener){
+        this.listener = listener;
+    }
+
+    /**
+     * set different colors for last dots
+     * @param newColors
+     */
+    public void setColors(int[] newColors){
+        this.colors = Arrays.copyOf(newColors,newColors.length);
     }
 
     public void bang(final View view) {
-        Rect r = new Rect();
-        view.getGlobalVisibleRect(r);
-        int[] location = new int[2];
-        getLocationOnScreen(location);
-        r.offset(-location[0], -location[1]);
-        r.inset(-mExpandInset[0], -mExpandInset[1]);
+
+        if(listener!=null) {
+            listener.onAnimationStart();
+        }
+
         int startDelay = 100;
         view.setScaleX(0.1f);
         view.setScaleY(0.1f);
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f).setDuration((long) (ANIMATE_DURATION*0.5f));
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-//            Random random = new Random();
-
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-//                view.setTranslationX((random.nextFloat() - 0.5f) * view.getWidth() * 0.05f);
-//                view.setTranslationY((random.nextFloat() - 0.5f) * view.getHeight() * 0.05f);
                 float animatedFraction = animation.getAnimatedFraction();
                 view.setScaleX(0.1f + animatedFraction*0.9f);
                 view.setScaleY(0.1f + animatedFraction*0.9f);
@@ -102,9 +113,8 @@ public class SmallBang extends View {
         });
         animator.setInterpolator(new OvershootInterpolator(2));
         animator.setStartDelay((long) (ANIMATE_DURATION * P3));
+
         animator.start();
-//        view.animate().setDuration(150).setStartDelay(startDelay).scaleX(0f).scaleY(0f).alpha(0f).start();
-        //explode(Utils.createBitmapFromView(view), r, startDelay, ExplosionAnimator.DEFAULT_DURATION);
         bang();
     }
 
@@ -118,6 +128,14 @@ public class SmallBang extends View {
             }
         });
         valueAnimator.start();
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if(listener!=null) {
+                    listener.onAnimationEnd();
+                }
+            }
+        });
         initDots();
     }
 

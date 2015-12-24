@@ -16,13 +16,6 @@
         android:layout_centerInParent="true"
         android:layout_height="30dp"
         android:text="Hello World!" />
-    <xyz.hanks.library.SmallBang
-        android:id="@+id/smallbang"
-        android:clickable="true"
-        android:onClick="show"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello World!" />
 
 
 </RelativeLayout>
