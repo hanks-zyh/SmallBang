@@ -44,7 +44,10 @@ public class SmallBang extends View {
     private float DOT_BIG_RADIUS = 8;
     private float DOT_SMALL_RADIUS = 5;
     private int[] mExpandInset = new int[2];
-    private SmallBangListener listener;
+    private SmallBangListener mListener;
+    private int centerY;
+    private int centerX;
+
     // 将下面的view变小
     // 画圆半径从小到大,同时颜色渐变 (P1)
     // 当半径到达 MAX_RADIUS, 开始画空心圆,空闲圆半径变大,画笔宽度从MAX_RADIUS变小
@@ -71,6 +74,14 @@ public class SmallBang extends View {
         init(attrs, defStyleAttr);
     }
 
+    public static SmallBang attach2Window(Activity activity) {
+        ViewGroup rootView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
+        SmallBang smallBang = new SmallBang(activity);
+        rootView.addView(smallBang, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        return smallBang;
+    }
+
     private void init(AttributeSet attrs, int defStyleAttr) {
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setStyle(Paint.Style.FILL);
@@ -79,36 +90,67 @@ public class SmallBang extends View {
 
     /**
      * listener for animation change time
+     *
      * @param listener
      */
-    public void setListener(SmallBangListener listener){
-        this.listener = listener;
+    public void setmListener(SmallBangListener listener) {
+        this.mListener = listener;
     }
 
     /**
      * set different colors for last dots
+     *
      * @param newColors
      */
-    public void setColors(int[] newColors){
-        this.colors = Arrays.copyOf(newColors,newColors.length);
+    public void setColors(int[] newColors) {
+        this.colors = Arrays.copyOf(newColors, newColors.length);
     }
 
-    public void bang(final View view) {
+    /**
+     * set small dot number
+     * @param dotNumber
+     */
+    public void setDotNumber(int dotNumber){
+        DOT_NUMBER = dotNumber;
+    }
 
-        if(listener!=null) {
-            listener.onAnimationStart();
+    public void bang(final View view, SmallBangListener listener) {
+        bang(view, -1, listener);
+    }
+
+    public void bang(final View view, float radius, SmallBangListener listener) {
+
+        // set listener
+        if (listener != null) {
+            setmListener(listener);
+            this.mListener.onAnimationStart();
         }
 
-        int startDelay = 100;
+        Rect r = new Rect();
+        view.getGlobalVisibleRect(r);
+        int[] location = new int[2];
+        getLocationOnScreen(location);
+        r.offset(-location[0], -location[1]);
+        r.inset(-mExpandInset[0], -mExpandInset[1]);
+
+        centerX = r.left + r.width() / 2;
+        centerY = r.top + r.height() / 2;
+
+        if (radius != -1) {
+            initRadius(radius);
+        } else {
+            initRadius(Math.max(r.width(),r.height()));
+        }
+
         view.setScaleX(0.1f);
         view.setScaleY(0.1f);
-        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f).setDuration((long) (ANIMATE_DURATION*0.5f));
+        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f).setDuration((long) (ANIMATE_DURATION * 0.5f));
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float animatedFraction = animation.getAnimatedFraction();
-                view.setScaleX(0.1f + animatedFraction*0.9f);
-                view.setScaleY(0.1f + animatedFraction*0.9f);
+                view.setScaleX(0.1f + animatedFraction * 0.9f);
+                view.setScaleY(0.1f + animatedFraction * 0.9f);
             }
         });
         animator.setInterpolator(new OvershootInterpolator(2));
@@ -116,9 +158,21 @@ public class SmallBang extends View {
 
         animator.start();
         bang();
+
     }
 
-    public void bang() {
+    private void initRadius(float max_circle_radius) {
+        MAX_CIRCLE_RADIUS = max_circle_radius;
+        MAX_RADIUS = MAX_CIRCLE_RADIUS * 1.1f;
+        DOT_BIG_RADIUS = MAX_CIRCLE_RADIUS * 0.07f;
+        DOT_SMALL_RADIUS = DOT_BIG_RADIUS * 0.5f;
+    }
+
+    public void bang(final View view) {
+        bang(view, null);
+    }
+
+    private void bang() {
         ValueAnimator valueAnimator = new ValueAnimator().ofFloat(0, 1).setDuration(ANIMATE_DURATION);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -131,8 +185,8 @@ public class SmallBang extends View {
         valueAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                if(listener!=null) {
-                    listener.onAnimationEnd();
+                if (mListener != null) {
+                    mListener.onAnimationEnd();
                 }
             }
         });
@@ -148,7 +202,6 @@ public class SmallBang extends View {
             dot.endColor = colors[random.nextInt(99999) % colors.length];
             dotList.add(dot);
         }
-
     }
 
     @Override
@@ -163,7 +216,7 @@ public class SmallBang extends View {
             int endColor = colors[1];
             circlePaint.setStyle(Paint.Style.FILL);
             circlePaint.setColor(evaluateColor(startColor, endColor, progress1));
-            canvas.drawCircle(getWidth() / 2, getHeight() / 2, MAX_CIRCLE_RADIUS * progress1, circlePaint);
+            canvas.drawCircle(centerX, centerY, MAX_CIRCLE_RADIUS * progress1, circlePaint);
         } else if (progress > P1) {
 
             if (progress > P1 && progress <= P3) {
@@ -176,7 +229,7 @@ public class SmallBang extends View {
                 float strokeWidth = (MAX_CIRCLE_RADIUS) * (1 - progress2);
                 circlePaint.setStrokeWidth(strokeWidth);
 
-                canvas.drawCircle(getWidth() / 2, getHeight() / 2, (MAX_CIRCLE_RADIUS) * progress2 + strokeWidth / 2, circlePaint);
+                canvas.drawCircle(centerX, centerY, (MAX_CIRCLE_RADIUS) * progress2 + strokeWidth / 2, circlePaint);
             }
             if (progress >= P2) {
                 circlePaint.setStyle(Paint.Style.FILL);
@@ -188,32 +241,21 @@ public class SmallBang extends View {
                     Dot dot = dotList.get(i);
                     circlePaint.setColor(evaluateColor(dot.startColor, dot.endColor, progress3));
 
-                    float x = (float) (r * Math.cos(i * 2 * Math.PI / DOT_NUMBER)) + getWidth() / 2;
-                    float y = (float) (r * Math.sin(i * 2 * Math.PI / DOT_NUMBER)) + getHeight() / 2;
+                    float x = (float) (r * Math.cos(i * 2 * Math.PI / DOT_NUMBER)) + centerX;
+                    float y = (float) (r * Math.sin(i * 2 * Math.PI / DOT_NUMBER)) + centerY;
                     canvas.drawCircle(x, y, DOT_BIG_RADIUS * (1 - progress3), circlePaint);
 
                     Dot dot2 = dotList.get(i + 1);
 
                     circlePaint.setColor(evaluateColor(dot2.startColor, dot2.endColor, progress3));
-                    float x2 = (float) (r * Math.cos(i * 2 * Math.PI / DOT_NUMBER + 0.2)) + getWidth() / 2;
-                    float y2 = (float) (r * Math.sin(i * 2 * Math.PI / DOT_NUMBER + 0.2)) + getHeight() / 2;
+                    float x2 = (float) (r * Math.cos(i * 2 * Math.PI / DOT_NUMBER + 0.2)) + centerX;
+                    float y2 = (float) (r * Math.sin(i * 2 * Math.PI / DOT_NUMBER + 0.2)) + centerY;
                     canvas.drawCircle(x2, y2, DOT_SMALL_RADIUS * (1 - progress3), circlePaint);
 
                 }
             }
         }
-
-
     }
-
-    public static SmallBang attach2Window(Activity activity) {
-        ViewGroup rootView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
-        SmallBang smallBang = new SmallBang(activity);
-        rootView.addView(smallBang, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        return smallBang;
-    }
-
 
     private int evaluateColor(int startValue, int endValue, float fraction) {
         if (fraction <= 0) {
