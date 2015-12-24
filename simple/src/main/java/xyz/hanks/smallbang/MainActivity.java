@@ -15,9 +15,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         smallBang = (SmallBang)findViewById(R.id.smallbang);
+
     }
 
     public void show(View view){
-        smallBang.bang();
+        smallBang.bang(findViewById(R.id.image));
     }
 }
