@@ -3,17 +3,21 @@
 
 
 for **ImageView**
+
 ![ImageView](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/heart.gif)
 
 for **Button**
+
 ![](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/button.gif)
 
 for **TextView**
+
 ![TextView](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/text.gif)
 
 for any?...
 
 DEMO
+
 ![demo](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/demo.gif)
 
 
