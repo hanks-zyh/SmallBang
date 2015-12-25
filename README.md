@@ -23,14 +23,20 @@ DEMO
 
 ## Usage
 
-jcenter? coming soon...
+### 0. Add the following to your build.gradle file.
+
+```
+dependencies {
+    compile 'hanks.xyz:smallbang-library:0.1.2'
+}
+```
 
 
-1. init SmallBang
+### 1. init SmallBang
 ```
 mSmallBang = SmallBang.attach2Window(this);
 ```
-2. animate to view
+### 2. animate to view
 ```
 mSmallBang.bang(view);
 ```
