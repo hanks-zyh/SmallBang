@@ -12,7 +12,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -207,7 +206,7 @@ public class SmallBang extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        Log.d("SmallBang", "draw" + progress);
+
 
         if (progress >= 0 && progress <= P1) {
             float progress1 = 1f / P1 * progress;
@@ -224,7 +223,7 @@ public class SmallBang extends View {
                 if (progress2 < 0) progress2 = 0;
                 if (progress2 > 1) progress2 = 1;
 
-                Log.d("SmallBang", "draw2======" + progress2);
+
                 circlePaint.setStyle(Paint.Style.STROKE);
                 float strokeWidth = (MAX_CIRCLE_RADIUS) * (1 - progress2);
                 circlePaint.setStrokeWidth(strokeWidth);
