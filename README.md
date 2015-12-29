@@ -25,7 +25,7 @@ DEMO
 
 ### 0. Add the following to your build.gradle file.
 
-```
+```groovy
 dependencies {
     compile 'hanks.xyz:smallbang-library:0.1.2'
 }
@@ -33,15 +33,17 @@ dependencies {
 
 
 ### 1. init SmallBang
-```
+```java
 mSmallBang = SmallBang.attach2Window(this);
+
 ```
 ### 2. animate to view
-```
+```java
 mSmallBang.bang(view);
 ```
 or
-```
+
+```java
 mSmallBang.bang(view,new SmallBangListener() {
     @Override
     public void onAnimationStart() {
@@ -54,7 +56,8 @@ mSmallBang.bang(view,new SmallBangListener() {
 });
 ```
 or
-```
+
+```java
 mSmallBang.bang(view,50,new SmallBangListener() {
     @Override
     public void onAnimationStart() {
@@ -70,7 +73,7 @@ mSmallBang.bang(view,50,new SmallBangListener() {
 ---
 other method
 
-```
+```java
 /**
   * set different colors for dots, the length should be 2 at least, colors[0] and colors[1] are Big Circle startColor and endColor;
   *
