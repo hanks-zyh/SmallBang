@@ -119,6 +119,12 @@ public class SmallBang extends View {
 
     public void bang(final View view, float radius, SmallBangListener listener) {
 
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.performClick();
+            }
+        });
         // set listener
         if (listener != null) {
             setmListener(listener);
