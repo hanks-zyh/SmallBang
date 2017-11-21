@@ -46,7 +46,6 @@ public class SmallBangView extends FrameLayout {
     private CircleView vCircle;
     private DotsView vDotsView;
     private View scaleView;
-    private boolean isChecked;
     private AnimatorSet animatorSet;
     private boolean init;
 
@@ -96,6 +95,10 @@ public class SmallBangView extends FrameLayout {
         this.dotSecondaryColor = dotSecondaryColor;
     }
 
+    public void setAnimScaleFactor(int animScaleFactor) {
+        this.animScaleFactor = animScaleFactor;
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -134,12 +137,6 @@ public class SmallBangView extends FrameLayout {
         addView(vDotsView, 0);
     }
 
-    @Override
-    public void setSelected(boolean selected) {
-        super.setSelected(selected);
-        isChecked = selected;
-    }
-
     public void likeAnimation() {
         likeAnimation(null);
     }
@@ -150,53 +147,49 @@ public class SmallBangView extends FrameLayout {
             animatorSet.cancel();
         }
 
-        if (isChecked) {
-            scaleView.animate().cancel();
-            scaleView.setScaleX(0);
-            scaleView.setScaleY(0);
-            vCircle.setProgress(0);
-            vDotsView.setCurrentProgress(0);
+        scaleView.animate().cancel();
+        scaleView.setScaleX(0);
+        scaleView.setScaleY(0);
+        vCircle.setProgress(0);
+        vDotsView.setCurrentProgress(0);
 
-            animatorSet = new AnimatorSet();
+        animatorSet = new AnimatorSet();
 
-            ObjectAnimator outerCircleAnimator = ObjectAnimator.ofFloat(vCircle, CircleView.OUTER_CIRCLE_RADIUS_PROGRESS, 0.1f, 1f);
-            outerCircleAnimator.setDuration(250);
+        ObjectAnimator outerCircleAnimator = ObjectAnimator.ofFloat(vCircle, CircleView.OUTER_CIRCLE_RADIUS_PROGRESS, 0.1f, 1f);
+        outerCircleAnimator.setDuration(250);
 
-            ObjectAnimator starScaleAnimator = ObjectAnimator.ofFloat(scaleView, SCALE, 0.2f, 1f);
-            starScaleAnimator.setDuration(250);
-            starScaleAnimator.setStartDelay(250);
-            starScaleAnimator.setInterpolator(OVERSHOOT_INTERPOLATOR);
+        ObjectAnimator starScaleAnimator = ObjectAnimator.ofFloat(scaleView, SCALE, 0.2f, 1f);
+        starScaleAnimator.setDuration(250);
+        starScaleAnimator.setStartDelay(250);
+        starScaleAnimator.setInterpolator(OVERSHOOT_INTERPOLATOR);
 
-            ObjectAnimator dotsAnimator = ObjectAnimator.ofFloat(vDotsView, DotsView.DOTS_PROGRESS, 0f, 1f);
-            dotsAnimator.setDuration(900);
-            dotsAnimator.setStartDelay(50);
-            dotsAnimator.setInterpolator(ACCELERATE_DECELERATE_INTERPOLATOR);
+        ObjectAnimator dotsAnimator = ObjectAnimator.ofFloat(vDotsView, DotsView.DOTS_PROGRESS, 0f, 1f);
+        dotsAnimator.setDuration(900);
+        dotsAnimator.setStartDelay(50);
+        dotsAnimator.setInterpolator(ACCELERATE_DECELERATE_INTERPOLATOR);
 
-            animatorSet.playTogether(
-                    outerCircleAnimator,
-                    starScaleAnimator,
-                    dotsAnimator
-            );
+        animatorSet.playTogether(
+                outerCircleAnimator,
+                starScaleAnimator,
+                dotsAnimator
+        );
 
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    vCircle.setProgress(0);
-                    vDotsView.setCurrentProgress(0);
-                    scaleView.setScaleX(1);
-                    scaleView.setScaleY(1);
-                }
-            });
-
-            animatorSet.start();
-
-            if (listener != null) {
-                animatorSet.addListener(listener);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                vCircle.setProgress(0);
+                vDotsView.setCurrentProgress(0);
+                scaleView.setScaleX(1);
+                scaleView.setScaleY(1);
             }
-        } else {
-            vCircle.setProgress(0);
-            vDotsView.setCurrentProgress(0);
+        });
+
+        animatorSet.start();
+
+        if (listener != null) {
+            animatorSet.addListener(listener);
         }
+
     }
 
 }
