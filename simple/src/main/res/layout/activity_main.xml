@@ -1,36 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/heart"
-        android:text="Hello World!" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/heart"
-        android:text="h"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="50dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:gravity="center"
-        android:src="@drawable/heart"
-        android:text="hanks"
-        android:textSize="14sp" />
+        android:orientation="horizontal">
 
+        <xyz.hanks.library.bang.SmallBangView
+            android:id="@+id/like_heart"
+            android:layout_width="56dp"
+            android:layout_height="56dp">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/heart_selector"
+                android:text="Hello World!"/>
+        </xyz.hanks.library.bang.SmallBangView>
+
+
+        <xyz.hanks.library.bang.SmallBangView
+            android:id="@+id/like_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            app:circle_end_color="#ffbc00"
+            app:circle_start_color="#fa9651"
+            app:dots_primary_color="#fa9651"
+            app:dots_secondary_color="#ffbc00">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="hanks"
+                android:textColor="@color/text_selector"
+                android:textSize="14sp"/>
+        </xyz.hanks.library.bang.SmallBangView>
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
