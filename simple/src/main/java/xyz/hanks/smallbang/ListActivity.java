@@ -32,7 +32,6 @@ public class ListActivity extends AppCompatActivity {
         for (int i = 0; i < 100; i++) {
             Item item = new Item();
             item.content = "this is content : " + i;
-            item.liked = i % 5 == 0;
             data.add(item);
         }
 

@@ -101,7 +101,7 @@ public class SmallBangView extends FrameLayout {
 
     public void setCircleStartColor(int circleStartColor) {
         this.circleStartColor = circleStartColor;
-         vCircle.setStartColor(circleStartColor);
+        vCircle.setStartColor(circleStartColor);
     }
 
     public void setDotColors(int[] colors) {
@@ -110,7 +110,7 @@ public class SmallBangView extends FrameLayout {
 
     public void setAnimScaleFactor(int animScaleFactor) {
         this.animScaleFactor = animScaleFactor;
-        OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(animScaleFactor)
+        OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(animScaleFactor);
     }
 
     @Override
