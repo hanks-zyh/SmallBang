@@ -2,7 +2,7 @@
 
 twitter like animation for any view :heartbeat:
 
-![demo](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/demo.gif)
+![demo](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/demo2.gif)
 
 [Demo APK](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/demo.apk?raw=true)
 
@@ -59,7 +59,7 @@ If this project help you reduce time to develop, you can give me a cup of coffee
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UGENU2RU26RUG)
 
-![](http://ww1.sinaimg.cn/large/8c9b876fly1flqz53k8j5j212b0kkq7p.jpg)
+![](https://github.com/hanks-zyh/SmallBang/blob/master/screenshots/donate.png)
 
 
 ## Contact & Help
