@@ -61,6 +61,7 @@ public class DotsView extends View {
     }
 
     private void init() {
+        setWillNotDraw(false);
         for (int i = 0; i < circlePaints.length; i++) {
             circlePaints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
             circlePaints[i].setStyle(Paint.Style.FILL);

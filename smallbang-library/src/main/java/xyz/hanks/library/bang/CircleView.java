@@ -10,7 +10,7 @@ import android.util.Property;
 import android.view.View;
 
 /**
- * Created by Miroslaw Stanek on 21.12.2015.
+ * Created by hanks
  */
 public class CircleView extends View {
     public static final Property<CircleView, Float> OUTER_CIRCLE_RADIUS_PROGRESS =
@@ -50,15 +50,16 @@ public class CircleView extends View {
     }
 
     private void init() {
+        setWillNotDraw(false);
         circlePaint.setStyle(Paint.Style.FILL);
         circlePaint.setColor(START_COLOR);
         ringPaint.setStyle(Paint.Style.STROKE);
         ringPaint.setColor(START_COLOR);
     }
 
+
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         if (progress == 0) {
             canvas.drawColor(Color.TRANSPARENT);
             return;
@@ -80,11 +81,12 @@ public class CircleView extends View {
     }
 
     private void updateCircleColor() {
-//        float colorProgress = (float) Utils.clamp(progress, 0.5, 1);
-//        colorProgress = (float) Utils.mapValueFromRangeToRange(colorProgress, 0.5f, 1f, 0f, 1f);
-        Integer color = (Integer) argbEvaluator.evaluate(progress * 2f, startColor, endColor);
-        this.circlePaint.setColor(color);
-        this.ringPaint.setColor(endColor);
+        if (progress <= 0.5) {
+            Integer color = (Integer) argbEvaluator.evaluate(progress * 2f, startColor, endColor);
+            this.circlePaint.setColor(color);
+        } else {
+            this.ringPaint.setColor(endColor);
+        }
     }
 
     public void setStartColor(int startColor) {

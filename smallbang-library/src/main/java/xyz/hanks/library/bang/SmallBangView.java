@@ -40,8 +40,6 @@ public class SmallBangView extends FrameLayout {
     private static OvershootInterpolator OVERSHOOT_INTERPOLATOR;
     private int circleStartColor;
     private int circleEndColor;
-    private int dotPrimaryColor;
-    private int dotSecondaryColor;
     private int animScaleFactor;
     private CircleView vCircle;
     private DotsView vDotsView;
@@ -59,16 +57,16 @@ public class SmallBangView extends FrameLayout {
 
     public SmallBangView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        setWillNotDraw(false);
         final TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.SmallBangView, defStyleAttr, 0);
 
         circleStartColor = array.getColor(R.styleable.SmallBangView_circle_start_color, CircleView.START_COLOR);
         circleEndColor = array.getColor(R.styleable.SmallBangView_circle_end_color, CircleView.END_COLOR);
 
-        dotPrimaryColor = array.getColor(R.styleable.SmallBangView_dots_primary_color, DotsView.COLOR_1);
-        dotSecondaryColor = array.getColor(R.styleable.SmallBangView_dots_secondary_color, DotsView.COLOR_2);
+        int dotPrimaryColor = array.getColor(R.styleable.SmallBangView_dots_primary_color, DotsView.COLOR_1);
+        int dotSecondaryColor = array.getColor(R.styleable.SmallBangView_dots_secondary_color, DotsView.COLOR_2);
 
-        animScaleFactor = array.getColor(R.styleable.SmallBangView_anim_scale_factor, 4);
+        animScaleFactor = array.getColor(R.styleable.SmallBangView_anim_scale_factor, 3);
 
         Boolean status = array.getBoolean(R.styleable.SmallBangView_liked, false);
         setSelected(status);
@@ -77,64 +75,106 @@ public class SmallBangView extends FrameLayout {
 
         OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(animScaleFactor);
         ACCELERATE_DECELERATE_INTERPOLATOR = new AccelerateDecelerateInterpolator();
+
+
+        FrameLayout.LayoutParams dotParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        dotParams.gravity = Gravity.CENTER;
+        vDotsView = new DotsView(getContext());
+        vDotsView.setLayoutParams(dotParams);
+        vDotsView.setColors(new int[]{dotPrimaryColor, dotSecondaryColor, dotPrimaryColor, dotSecondaryColor});
+
+        FrameLayout.LayoutParams circleParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        circleParams.gravity = Gravity.CENTER;
+        vCircle = new CircleView(getContext());
+        vCircle.setStartColor(circleStartColor);
+        vCircle.setEndColor(circleEndColor);
+        vCircle.setLayoutParams(circleParams);
+
+        addView(vDotsView);
+        addView(vCircle);
     }
 
     public void setCircleEndColor(int circleEndColor) {
         this.circleEndColor = circleEndColor;
+        vCircle.setEndColor(circleEndColor);
     }
 
     public void setCircleStartColor(int circleStartColor) {
         this.circleStartColor = circleStartColor;
+         vCircle.setStartColor(circleStartColor);
     }
 
-    public void setDotPrimaryColor(int dotPrimaryColor) {
-        this.dotPrimaryColor = dotPrimaryColor;
-    }
-
-    public void setDotSecondaryColor(int dotSecondaryColor) {
-        this.dotSecondaryColor = dotSecondaryColor;
+    public void setDotColors(int[] colors) {
+        vDotsView.setColors(colors);
     }
 
     public void setAnimScaleFactor(int animScaleFactor) {
         this.animScaleFactor = animScaleFactor;
+        OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(animScaleFactor)
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        initChildren();
-    }
-
-    private void initChildren() {
-        if (init) {
-            return;
-        }
-        init = true;
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int childCount = getChildCount();
-        if (childCount != 1) {
+        if (childCount != 3) {
             throw new RuntimeException("must have one child view");
         }
-        scaleView = getChildAt(0);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        int iconSize = Math.min(scaleView.getMeasuredHeight(), scaleView.getMeasuredWidth());
+        if (scaleView == null) {
+            scaleView = findScaleView();
+        }
+        int iconSize = Math.min(scaleView.getMeasuredWidth(), scaleView.getMeasuredHeight());
 
-        LayoutParams params = new FrameLayout.LayoutParams(iconSize, iconSize);
-        params.gravity = Gravity.CENTER;
+        for (int i = 0; i < childCount; i++) {
+            View child = getChildAt(i);
+            if (child instanceof CircleView) {
+                measureChild(child,
+                        MeasureSpec.makeMeasureSpec((int) (iconSize * 1.5f), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec((int) (iconSize * 1.5f), MeasureSpec.EXACTLY));
+            } else if (child instanceof DotsView) {
+                measureChild(child,
+                        MeasureSpec.makeMeasureSpec((int) (iconSize * 2.5f), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec((int) (iconSize * 2.5f), MeasureSpec.EXACTLY));
+            }
+        }
+        int width = sizeWidth;
+        int height = sizeHeight;
+        if (widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.UNSPECIFIED) {
+            width = (int) (iconSize * 2.5f);
+        }
+        if (heightMode == MeasureSpec.AT_MOST || heightMode == MeasureSpec.UNSPECIFIED) {
+            height = (int) (iconSize * 2.5f);
+        }
+        setMeasuredDimension(width, height);
+    }
 
-        vDotsView = new DotsView(getContext());
-        LayoutParams dotParams = new LayoutParams((int) (iconSize * 2.5f), (int) (iconSize * 2.5f));
-        dotParams.gravity = Gravity.CENTER;
-        vDotsView.setLayoutParams(dotParams);
-        vDotsView.setColors(new int[]{dotPrimaryColor, dotSecondaryColor, dotPrimaryColor, dotSecondaryColor});
+    private View findScaleView() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (isScaleView(child)) {
+                return child;
+            }
+        }
+        throw new RuntimeException("must have one child in SmallBangView");
+    }
 
-        LayoutParams circleParam = new FrameLayout.LayoutParams((int) (iconSize * 1.3f), (int) (iconSize * 1.3f));
-        circleParam.gravity = Gravity.CENTER;
-        vCircle = new CircleView(getContext());
-        vCircle.setLayoutParams(circleParam);
-        vCircle.setStartColor(circleStartColor);
-        vCircle.setEndColor(circleEndColor);
-        addView(vCircle, 0);
-        addView(vDotsView, 0);
+    private boolean isScaleView(View child) {
+        return child != null && !(child instanceof DotsView) && !(child instanceof CircleView);
+    }
+
+    public void stopAnimation() {
+        if (animatorSet != null) {
+            animatorSet.cancel();
+        }
+        scaleView.setScaleX(1);
+        scaleView.setScaleY(1);
+        vCircle.setProgress(0);
+        vDotsView.setCurrentProgress(0);
     }
 
     public void likeAnimation() {
@@ -147,7 +187,6 @@ public class SmallBangView extends FrameLayout {
             animatorSet.cancel();
         }
 
-        scaleView.animate().cancel();
         scaleView.setScaleX(0);
         scaleView.setScaleY(0);
         vCircle.setProgress(0);
@@ -164,7 +203,7 @@ public class SmallBangView extends FrameLayout {
         starScaleAnimator.setInterpolator(OVERSHOOT_INTERPOLATOR);
 
         ObjectAnimator dotsAnimator = ObjectAnimator.ofFloat(vDotsView, DotsView.DOTS_PROGRESS, 0f, 1f);
-        dotsAnimator.setDuration(900);
+        dotsAnimator.setDuration(800);
         dotsAnimator.setStartDelay(50);
         dotsAnimator.setInterpolator(ACCELERATE_DECELERATE_INTERPOLATOR);
 
@@ -189,7 +228,5 @@ public class SmallBangView extends FrameLayout {
         if (listener != null) {
             animatorSet.addListener(listener);
         }
-
     }
-
 }
