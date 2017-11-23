@@ -25,6 +25,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26+'
     implementation 'com.android.support:recyclerview-v7:26+'
     implementation 'com.google.android.gms:play-services-ads:11.6.0'
-    //implementation 'pub.hanks:smallbang-library:1.2.0'
+    // implementation 'pub.hanks:smallbang:1.2.2'
     implementation project(':smallbang-library')
 }

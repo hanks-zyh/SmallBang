@@ -10,7 +10,7 @@ twitter like animation for any view :heartbeat:
 
 ```groovy
 dependencies {
-    implementation 'pub.hanks:smallbang-library:1.2.0'
+    implementation 'pub.hanks:smallbang:1.2.2'
 }
 ```
 
